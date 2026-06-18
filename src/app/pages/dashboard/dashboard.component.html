@@ -1,0 +1,66 @@
+<nav class="topbar">
+  <div class="brand">Dashboard</div>
+  <button class="logout-btn" (click)="logout()">Sign Out</button>
+</nav>
+
+<main class="dashboard-page">
+  <div *ngIf="loading" class="loading">
+    Loading dashboard...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <h2>Overview</h2>
+
+    <div class="chart-grid" *ngIf="dashboardData">
+      <div class="dashboard-card">
+        <div class="card-title">Task Status Distribution</div>
+
+        <div class="chart-box">
+          <canvas
+            baseChart
+            [data]="donutChartData"
+            [options]="chartOptions"
+            [type]="'doughnut'">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-title">Monthly Performance Overview</div>
+
+        <div class="chart-box">
+          <canvas
+            baseChart
+            [data]="barChartData"
+            [options]="chartOptions"
+            [type]="'bar'">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <h2>User List</h2>
+
+    <div class="table-card" *ngIf="dashboardData">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>User Name</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let user of dashboardData.tableUsers">
+            <td>{{ user.id }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.userName }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</main>
