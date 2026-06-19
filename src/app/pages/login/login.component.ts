@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+
+import { AuthService } from '../../services/auth.service';
+import { PouchdbAuthService } from '../../services/pouchdb-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private pouchdbAuthService: PouchdbAuthService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -48,10 +51,26 @@ export class LoginComponent implements OnInit {
           alert(res.message || 'Invalid email or password.');
         }
       },
-      error: (err) => {
+
+      error: async (err) => {
+        console.log('Login API failed:', err);
+
+        const { email, password } = this.loginForm.value;
+
+        const valid = await this.pouchdbAuthService.validateUser(
+          email,
+          password
+        );
+
         this.isSubmitting = false;
-        console.log('Login error:', err);
-        alert('Invalid email or password.');
+
+        if (valid) {
+          this.authService.setToken('local-pouchdb-token');
+          alert('Login successful.');
+          this.router.navigate(['/dashboard']);
+        } else {
+          alert('Invalid email or password.');
+        }
       }
     });
   }

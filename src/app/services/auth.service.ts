@@ -11,8 +11,11 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(data: any) {
-    return this.http.post(`${this.baseUrl}/auth/login`, data);
-  }
+  return this.http.post(`${this.baseUrl}/auth/login`, {
+    username: data.email,
+    password: data.password
+  });
+}
 
   setToken(token: string) {
     localStorage.setItem('token', token);
